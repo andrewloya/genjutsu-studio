@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LYRC Genjutsu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* LYRC studio skin (lyrc-ui tokens): black, white, cyan; Bebas titles, Space Grotesk UI, Inter numbers. */
+:root{
+  color-scheme:dark;
+  --black:#000; --s1:#0a0a0f; --s2:#0f0f14; --s3:#151520; --b1:#1a1a1f; --b2:#2a2a32;
+  --t2:#b0b0b8; --t3:#808088; --t4:#5a5a62;
+  --blue:#3cc5f7; --blue-deep:#1ba3e0; --pale:#81cbee; --danger:#ff3b3b; --amber:#f5b544;
+  --display:"Bebas Neue",Impact,sans-serif; --sans:"Space Grotesk",system-ui,sans-serif; --num:"Inter",system-ui,sans-serif;
+  --out:cubic-bezier(.16,1,.3,1); --ease:cubic-bezier(.22,1,.36,1); --soft:cubic-bezier(.45,0,.55,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--black);color:#fff;font:400 14px/1.45 var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums}
+@keyframes rise{from{opacity:0;translate:0 18px}}
+.rise{animation:rise .75s var(--out) backwards;animation-delay:calc(var(--i,0)*80ms)}
+@media(prefers-reduced-motion:reduce){.rise{animation:none}}
+
+.app{height:100%;display:grid;grid-template-rows:60px minmax(0,1fr)}
+
+/* header */
+.top{display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid var(--b1)}
+.brand{font-family:var(--display);font-size:32px;letter-spacing:.01em;line-height:1;white-space:nowrap}
+.brand .c{color:var(--blue);margin-left:6px}
+.vsep{width:1px;height:28px;background:var(--b2)}
+.tagline{color:var(--t3);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tagline b{color:#fff;font-weight:600}
+.grow{flex:1}
+.spend{display:flex;align-items:center;gap:10px;height:38px;padding:0 14px;border-radius:999px;background:rgba(10,12,18,.58);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.spend .l{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--blue)}
+.spend .v{font-family:var(--num);font-weight:700;font-size:15px}
+
+/* layout */
+.main{display:grid;grid-template-columns:440px minmax(0,1fr);min-height:0}
+.panel{border-right:1px solid var(--b1);display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:0;background:var(--s1)}
+.scroll{overflow:auto;min-height:0}
+.sec{padding:18px 20px;border-bottom:1px solid var(--b1);display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.sec>*{min-width:0}
+.sec:last-child{border-bottom:0}
+.lab{display:flex;align-items:baseline;gap:10px}
+.lab .k{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--blue)}
+.lab .v{font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.lab .r{margin-left:auto;font-size:12px;color:var(--t3)}
+.link{border:0;background:transparent;padding:4px 0;color:var(--pale)!important;font-weight:600;white-space:nowrap}
+
+/* clip */
+.drop{border:1.5px dashed rgba(60,197,247,.45);border-radius:14px;padding:22px;display:grid;gap:10px;justify-items:center;text-align:center;background:linear-gradient(180deg,rgba(60,197,247,.06),transparent)}
+.drop.over{border-color:var(--blue);background:rgba(60,197,247,.12)}
+.drop h3{margin:0;font-family:var(--display);font-weight:400;font-size:30px;line-height:.95;letter-spacing:.01em}
+.drop h3 em{font-style:normal;color:var(--pale)}
+.drop p{margin:0;color:var(--t3);font-size:13px}
+.cliprow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:center}
+.clipview{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--b2);background:#000;aspect-ratio:16/9}
+.clipview video{width:100%;height:100%;object-fit:contain;display:block;cursor:pointer}
+.clipview .tc{position:absolute;left:6px;bottom:6px;padding:2px 7px;border-radius:999px;font:600 10px var(--num);background:rgba(10,12,18,.58);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(16px)}
+.trim{display:grid;gap:10px}
+.trow{display:grid;grid-template-columns:48px 1fr 50px;align-items:center;gap:8px;font-size:12px;color:var(--t2)}
+.trow output{font:600 13px var(--num);color:#fff;text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--blue) var(--p,50%),var(--b2) var(--p,50%));outline-offset:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--blue);box-shadow:0 0 12px rgba(60,197,247,.5)}
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.mini{flex:none;width:64px;height:36px;border-radius:8px;overflow:hidden;border:1px solid var(--b2);background:#000 center/cover;position:relative}
+.mini.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.mini.add{display:grid;place-items:center;border-style:dashed;border-color:rgba(60,197,247,.4);color:var(--pale);background:transparent}
+
+/* characters */
+.chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.char{position:relative;aspect-ratio:3/4;border-radius:12px;overflow:hidden;border:1px solid var(--b2);background:var(--s3) center 18%/cover;padding:0;text-align:left;transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.char::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.85))}
+.char span{position:absolute;left:8px;right:8px;bottom:6px;z-index:1;font-weight:700;font-size:12px;line-height:1.2}
+.char.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue),0 0 22px rgba(60,197,247,.25)}
+.char .tick{position:absolute;top:8px;right:8px;z-index:1;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#04121a;display:none;place-items:center}
+.char.on .tick{display:grid}
+.tile{aspect-ratio:3/4;border-radius:12px;border:1.5px dashed rgba(60,197,247,.4);background:transparent;display:grid;place-content:center;justify-items:center;gap:5px;color:var(--pale);font-weight:700;font-size:12px;text-align:center;padding:4px}
+.tile small{color:var(--t3);font-weight:500;font-size:11px}
+.form{display:grid;gap:8px;padding:14px;border-radius:12px;border:1px solid var(--b2);background:var(--s2)}
+.form input[type=text],textarea{width:100%;border-radius:10px;border:1px solid var(--b2);background:var(--black);color:#fff;font:400 14px/1.4 var(--sans);padding:10px 12px;resize:vertical}
+.form .row{display:flex;gap:8px}
+
+/* lip sync */
+.seg.two{grid-template-columns:repeat(2,1fr)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:12px;border:1px solid var(--b1);background:var(--black)}
+.seg button{border:1px solid transparent;border-radius:9px;background:transparent;padding:10px 6px;display:grid;gap:2px;justify-items:center;transition:background .3s var(--ease),border-color .3s var(--ease)}
+.seg b{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.02em;line-height:1}
+.seg small{font-size:11px;color:var(--t3)}
+.seg button.on{background:rgba(60,197,247,.12);border-color:rgba(60,197,247,.5)}
+.seg button.on b{color:var(--blue)}
+.hint{font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start}
+.hint svg{flex:none;margin-top:1px;color:var(--pale)}
+.describe{min-height:64px}
+.toggle{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;padding:2px 0;text-align:left}
+.toggle .sw{flex:none;width:40px;height:24px;border-radius:999px;background:var(--b2);position:relative;transition:background .3s var(--ease)}
+.toggle .sw i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:translate .3s var(--out)}
+.toggle[aria-checked=true] .sw{background:linear-gradient(90deg,var(--blue),var(--blue-deep))}
+.toggle[aria-checked=true] .sw i{translate:16px 0}
+.toggle .tt{display:grid;gap:1px;min-width:0}
+.toggle b{font-size:13px;font-weight:600}
+.toggle small{font-size:11.5px;color:var(--t3)}
+.desc{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;padding:0;color:var(--t3);font-size:12px;text-align:left}
+.desc span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.desc svg{flex:none;color:var(--pale)}
+
+/* make */
+.makebar{padding:14px 20px 18px;border-top:1px solid var(--b1);display:grid;gap:8px;background:var(--s1)}
+.primary{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 28px;border:0;border-radius:13px;background:linear-gradient(90deg,var(--blue),var(--blue-deep));color:#04121a;font:700 16px/1 var(--sans);white-space:nowrap;box-shadow:0 0 22px rgba(60,197,247,.35),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.12);transition:filter .3s var(--ease),opacity .3s var(--ease)}
+.primary::before{content:"";position:absolute;inset:0 0 52%;background:linear-gradient(180deg,rgba(255,255,255,.3),transparent);pointer-events:none}
+.primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.primary.sm{height:44px;border-radius:11px;padding:0 16px;font-size:14px}
+.secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 16px;border-radius:11px;border:1px solid rgba(60,197,247,.25);background:rgba(60,197,247,.08);color:var(--pale);font:600 14px/1 var(--sans);white-space:nowrap}
+.secondary.warn{border-color:rgba(245,181,68,.55);background:rgba(245,181,68,.12);color:var(--amber)}
+.quiet{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:11px;border:1px solid var(--b2);background:rgba(255,255,255,.03);color:var(--t2);font:600 13px/1 var(--sans)}
+.makebar .primary{width:100%}
+.makebar .note{font-size:12px;color:var(--t3);text-align:center}
+
+/* stage */
+.stage{min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto auto;gap:14px;padding:20px 24px 18px}
+.screen{position:relative;min-height:0;border-radius:14px;border:1px solid var(--b2);background:#000;overflow:hidden;display:grid;place-items:center}
+.screen video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.views{position:absolute;top:12px;right:12px;display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(10,12,18,.58);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:2}
+.views button{border:0;background:transparent;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--t2)}
+.views button.on{background:rgba(60,197,247,.18);color:#fff}
+.empty{display:grid;gap:10px;justify-items:center;text-align:center;padding:24px}
+.empty h2{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(34px,4vw,56px);line-height:.92}
+.empty h2 em{font-style:normal;color:var(--blue)}
+.empty p{margin:0;color:var(--t3);max-width:46ch}
+
+/* loader: LYRC wordmark with a light rolling through it */
+.loader{font-family:var(--display);font-size:96px;line-height:.9;letter-spacing:.04em;color:transparent;background:linear-gradient(100deg,#1d2a33 0%,#1d2a33 38%,#bfefff 50%,#1d2a33 62%,#1d2a33 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;animation:roll 1.8s var(--soft) infinite}
+@keyframes roll{from{background-position:100% 0}to{background-position:-50% 0}}
+@media(prefers-reduced-motion:reduce){.loader{animation:none;color:#2a3a44}}
+.progress{display:grid;gap:18px;justify-items:center;width:min(440px,90%)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;width:100%}
+.steps li{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--t4)}
+.steps li i{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--b2);display:grid;place-items:center;flex:none;font-style:normal}
+.steps li.done{color:var(--t2)} .steps li.done i{background:var(--blue);border-color:var(--blue);color:#04121a}
+.steps li.now{color:#fff;font-weight:600} .steps li.now i{border-color:var(--blue);box-shadow:0 0 12px rgba(60,197,247,.6)}
+.steps li .pct{margin-left:auto;font:600 12px var(--num);color:var(--blue)}
+.elapsed{font:500 12px var(--num);color:var(--t3)}
+
+/* info bar */
+.info{display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:44px}
+.info .who{display:flex;align-items:center;gap:10px;min-width:0}
+.info .av{width:40px;height:40px;border-radius:10px;background:var(--s3) center 15%/cover;border:1px solid var(--b2);flex:none}
+.info .nm{font-weight:700;font-size:15px;line-height:1.2}
+.info .sub{font-size:12px;color:var(--t3)}
+.meter{display:grid;gap:5px;min-width:150px}
+.meter .top2{display:flex;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--t3)}
+.meter .top2 b{font:700 12px var(--num);letter-spacing:0;color:#fff}
+.meter .bar{height:6px;border-radius:6px;background:var(--b2);overflow:hidden}
+.meter .bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--blue),var(--pale));transition:width .6s var(--out)}
+.chip{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.1em;border:1px solid rgba(60,197,247,.35);color:var(--pale);background:rgba(60,197,247,.08)}
+.chip.amber{border-color:rgba(245,181,68,.45);color:var(--amber);background:rgba(245,181,68,.08)}
+.cost{font:700 15px var(--num)}
+.info .acts{margin-left:auto;display:flex;gap:8px}
+
+/* swaps */
+.swaps{display:grid;gap:10px}
+.swaps .lab{padding:0 2px}
+.cards{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px}
+.card{flex:none;width:188px;border-radius:12px;border:1px solid var(--b2);background:var(--s2);padding:0;overflow:hidden;text-align:left;transition:border-color .3s var(--ease)}
+.card.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.card .th{aspect-ratio:16/9;background:#000 center/cover;position:relative;display:grid;place-items:center}
+.card .th .loader{font-size:34px}
+.card .badge{position:absolute;right:6px;bottom:6px;padding:2px 7px;border-radius:999px;font:700 11px var(--num);background:rgba(10,12,18,.7);border:1px solid rgba(255,255,255,.13)}
+.card .meta{padding:8px 10px;display:grid;gap:2px}
+.card .meta b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .meta span{font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card.fail .badge{color:var(--danger)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:24px;translate:-50% 0;display:flex;align-items:center;gap:12px;min-height:48px;padding:7px 18px 7px 7px;border-radius:24px;background:linear-gradient(180deg,rgba(30,30,38,.94),rgba(6,6,10,.96));border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 14px 34px rgba(0,0,0,.65);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);font-weight:600;font-size:14px;max-width:min(640px,92vw);z-index:9;transition:opacity .35s var(--ease),translate .35s var(--out)}
+.toast[hidden]{display:flex!important;opacity:0;translate:-50% 16px;pointer-events:none}
+.toast .dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;background:rgba(60,197,247,.18);color:var(--blue)}
+.toast.err .dot{background:rgba(255,59,59,.18);color:var(--danger)}
+
+@media(max-width:900px){
+  body{overflow:auto}
+  .app{height:auto}
+  .main{grid-template-columns:1fr}
+  .panel{border-right:0;order:2}
+  .stage{order:1;grid-template-rows:auto auto auto;padding:16px}
+  .screen{aspect-ratio:16/9}
+  .tagline{display:none}
+}
+
+/* key pop-up: LYRC confirmation family (centered glass icon, Bebas title, full-width primary, quiet dismissal, no X) */
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:16px}
+.mcard{width:min(420px,100%);display:grid;gap:14px;justify-items:center;text-align:center;padding:28px 24px 20px;border-radius:20px;background:linear-gradient(180deg,rgba(30,30,38,.96),rgba(6,6,10,.98));border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 24px 60px rgba(0,0,0,.7);animation:rise .6s var(--out) backwards}
+.micon{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:rgba(10,12,18,.58);border:1px solid rgba(255,255,255,.13);color:var(--blue)}
+.mcard h2{margin:0;font-family:var(--display);font-weight:400;font-size:34px;line-height:.95;letter-spacing:.01em}
+.mcard h2 em{font-style:normal;color:var(--blue)}
+.mcard p{margin:0;color:var(--t2);font-size:14px}
+.mcard p a{color:var(--pale)}
+.mcard input{width:100%;height:48px;border-radius:12px;border:1px solid var(--b2);background:var(--black);color:#fff;font:500 15px var(--num);padding:0 14px}
+.mcard .primary,.mcard .quiet{width:100%;justify-content:center}
+.keybtn{height:38px;border-radius:999px}
+[hidden]{display:none!important}
+@media(max-height:760px){.char,.tile{aspect-ratio:1/1}.char{background-position:center 10%}.tile small{display:none}.sec{padding:14px 20px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top rise" style="--i:0">
+    <div class="brand">LYRC<span class="c">GENJUTSU</span></div>
+    <div class="vsep"></div>
+    <div class="tagline"><b>Any character.</b> Your scene, your moves, your lips.</div>
+    <div class="grow"></div>
+    <button class="quiet keybtn" id="keyBtn" title="Your Evolink API key"><span id="keyIc"></span>Key</button>
+    <div class="spend" title="Evolink spend today"><span class="l">TODAY</span><span class="v" id="spend">$0.00</span></div>
+  </header>
+
+  <div class="main">
+    <aside class="panel rise" style="--i:1">
+      <div class="scroll">
+        <section class="sec" id="clipSec">
+          <div class="lab"><span class="k">YOUR CLIP</span><span class="v" id="clipName"></span><button class="link r" id="newClip">+ New clip</button></div>
+          <div id="clipBody"></div>
+        </section>
+        <section class="sec">
+          <div class="lab"><span class="k">CHARACTER</span><span class="v" id="charName"></span></div>
+          <div class="seg two" id="swapSeg" role="radiogroup" aria-label="What to swap">
+            <button data-v="body" role="radio"><b>WHOLE BODY</b><small>Their outfit too</small></button>
+            <button data-v="head" role="radio"><b>HEAD ONLY</b><small>Keep the costume (movies)</small></button>
+          </div>
+          <div class="chars" id="chars"></div>
+          <div id="charForm"></div>
+          <button class="desc" id="descToggle"></button>
+          <textarea id="describe" class="describe" hidden placeholder="What the character looks like. Filled from the character; change it per swap."></textarea>
+        </section>
+        <section class="sec">
+          <div class="lab"><span class="k">LIP SYNC</span><span class="v" id="lipName"></span></div>
+          <div class="seg" id="seg" role="radiogroup" aria-label="Lip sync">
+            <button data-v="max" role="radio"><b>MAX</b><small>Best lips</small></button>
+            <button data-v="balanced" role="radio"><b>BALANCED</b><small>Lip line only</small></button>
+            <button data-v="clean" role="radio"><b>CLEAN</b><small>No tint</small></button>
+          </div>
+          <div class="hint" id="lipHint"></div>
+          <button class="toggle" id="relaxToggle" role="switch"><span class="sw"><i></i></span><span class="tt"><b>Relaxed filter · +10%</b><small>Evolink's looser setting, for scenes the normal one blocks</small></span></button>
+          <button class="toggle" id="fitToggle" role="switch"><span class="sw"><i></i></span><span class="tt"><b>Match my outfit</b><small>Baggy sleeves in your clip → long sleeves on them, not giant arms</small></span></button>
+        </section>
+      </div>
+      <div class="makebar">
+        <button class="primary" id="make" disabled>Make it</button>
+        <div class="note" id="makeNote">Prep runs free on your Mac · one render at a time</div>
+      </div>
+    </aside>
+
+    <main class="stage rise" style="--i:2">
+      <div class="screen" id="screen"></div>
+      <div class="info" id="info"></div>
+      <div class="swaps">
+        <div class="lab"><span class="k">YOUR SWAPS</span><span class="r" id="swapCount"></span></div>
+        <div class="cards" id="cards"></div>
+      </div>
+    </main>
+  </div>
+</div>
+<div class="modal" id="keyModal" hidden role="dialog" aria-modal="true" aria-labelledby="keyTitle">
+  <div class="mcard">
+    <div class="micon" id="keyIcon"></div>
+    <h2 id="keyTitle">PASTE YOUR <em>EVOLINK</em> KEY</h2>
+    <p>Genjutsu runs on your own Evolink account. Make a key at <a href="https://evolink.ai" target="_blank" rel="noopener">evolink.ai</a> → API Keys. It stays on this computer.</p>
+    <input id="keyInput" type="password" placeholder="Your Evolink API key" autocomplete="off" spellcheck="false">
+    <button class="primary" id="keySave">Save key</button>
+    <button class="quiet" id="keyCancel">Not now</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden role="status"><span class="dot" id="toastDot"></span><span id="toastText"></span></div>
+<input type="file" id="fileClip" accept="video/mp4,video/quicktime,.mov,.mp4,.m4v" hidden>
+
+<script>
+const IC = {
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+  plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  wand:'<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  folder:'<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>',
+  hd:'<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/>',
+  lips:'<path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/>',
+  alert:'<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>',
+  key:'<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+  sparkle:'<path d="M9.94 14.06 4 20"/><path d="m14 4 1.5 3.5L19 9l-3.5 1.5L14 14l-1.5-3.5L9 9l3.5-1.5Z"/>'
+};
+const icon = (n, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money = v => '$' + (v ?? 0).toFixed(2);
+const fmtT = s => { s = Math.max(0, s); const m = Math.floor(s / 60); return `${m}:${(s - m * 60).toFixed(1).padStart(4, '0')}`; };
+
+const LIP = {
+  max:{name:'Max', hint:'Tightest lips, but the neon guide has tinted the face (orange lips) in 2 of 6 renders. Breaks the face lock; use only if lips matter more.'},
+  balanced:{name:'Balanced', hint:'Only the lips get a neon line. Should keep most of Max\'s lip sync with less tint. New: not tested yet.'},
+  clean:{name:'Clean', hint:'Default. Nothing neon near the face, so the character\'s face and hat stay exactly like the photo. Lips still follow.'}
+};
+
+let S = null;
+const saved = (() => { try { return JSON.parse(localStorage.getItem('gj-sel') || '{}'); } catch { return {}; } })();
+const sel = Object.assign({source:null, start:0, length:8, character:null, lipsync:'clean', match:true, swap:'body', relaxed:false, run:null, view:'result', descs:{}}, saved);
+const save = () => { try { localStorage.setItem('gj-sel', JSON.stringify(sel)); } catch {} };
+let charFormOpen = null, hdArmed = null, lastTaskDone = null, uploading = false;
+
+function toast(text, err = false) {
+  $('toastText').textContent = text; $('toast').classList.toggle('err', err);
+  $('toastDot').innerHTML = icon(err ? 'alert' : 'check', 18); $('toast').hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => $('toast').hidden = true, err ? 7000 : 3500);
+}
+async function api(path, opts = {}) {
+  const r = await fetch(path, opts);
+  if (!r.ok) { let m = r.statusText; try { m = (await r.json()).detail || m; } catch {} throw new Error(m); }
+  return r.json();
+}
+
+/* ---------- clip ---------- */
+function source() { return S?.sources.find(s => s.id === sel.source); }
+function renderClip() {
+  const src = source(), body = $('clipBody');
+  $('clipName').textContent = src ? src.name : '';
+  if (!src) {
+    delete body.dataset.src;
+    body.innerHTML = `<div class="drop" id="drop">
+        <h3>DROP A CLIP OF <em>YOU</em></h3>
+        <p>MP4 or MOV · face lit, facing camera · your song playing</p>
+        <button class="primary sm" id="pick">${icon('upload')} ${uploading ? 'Uploading…' : 'Choose a file'}</button>
+      </div>${S.sources.length ? `<div class="strip">${S.sources.map(miniHtml).join('')}</div>` : ''}`;
+    $('pick').onclick = () => $('fileClip').click(); wireDrop($('drop')); wireMinis(); return;
+  }
+  const maxStart = Math.max(0, src.duration - 4);
+  sel.start = Math.min(sel.start, maxStart);
+  const maxLen = Math.min(15, src.duration - sel.start);
+  sel.length = Math.min(Math.max(4, sel.length), maxLen);
+  if (body.dataset.src !== src.id) {
+    body.dataset.src = src.id;
+    body.innerHTML = `<div class="cliprow"><div class="clipview"><video id="clipVid" src="${src.url}" muted playsinline preload="metadata" title="Click to play your 8 seconds once"></video><span class="tc" id="tc"></span></div>
+      <div class="trim">
+        <label class="trow">Start <input type="range" id="rStart" min="0" step="0.1"> <output id="oStart"></output></label>
+        <label class="trow">Length <input type="range" id="rLen" min="4" step="0.5"> <output id="oLen"></output></label>
+      </div></div>
+      <div class="strip" id="srcStrip"></div>`;
+    const v = $('clipVid');
+    v.addEventListener('loadedmetadata', () => { v.currentTime = sel.start; });
+    v.addEventListener('timeupdate', () => { if (v.currentTime >= sel.start + sel.length) { v.pause(); v.currentTime = sel.start; } });  // play once, then stop
+    v.addEventListener('click', () => { if (v.paused) { if (v.currentTime < sel.start || v.currentTime >= sel.start + sel.length) v.currentTime = sel.start; v.play(); } else v.pause(); });
+    $('rStart').oninput = e => { sel.start = +e.target.value; $('clipVid').currentTime = sel.start; syncTrim(); save(); renderMake(); };
+    $('rLen').oninput = e => { sel.length = +e.target.value; syncTrim(); save(); renderMake(); };
+  }
+  $('srcStrip').hidden = S.sources.length < 2;
+  $('srcStrip').innerHTML = S.sources.map(miniHtml).join('');
+  wireMinis(); syncTrim(); wireDrop($('clipSec'));
+}
+function syncTrim() {
+  const src = source(); if (!src || !$('rStart')) return;
+  const rs = $('rStart'), rl = $('rLen'), maxStart = Math.max(0, src.duration - 4);
+  rs.max = maxStart.toFixed(1); rs.value = sel.start;
+  rl.max = Math.min(15, src.duration - sel.start).toFixed(1); if (sel.length > +rl.max) sel.length = +rl.max; rl.value = sel.length;
+  rs.style.setProperty('--p', (maxStart ? sel.start / maxStart * 100 : 0) + '%');
+  rl.style.setProperty('--p', ((sel.length - 4) / Math.max(.1, +rl.max - 4) * 100) + '%');
+  $('oStart').textContent = fmtT(sel.start); $('oLen').textContent = sel.length.toFixed(1) + 's';
+  $('tc').textContent = `${fmtT(sel.start)} → ${fmtT(sel.start + sel.length)}`;
+}
+const miniHtml = s => `<button class="mini ${s.id === sel.source ? 'on' : ''}" data-src="${esc(s.id)}" title="${esc(s.name)}" style="background-image:url('${s.thumb}')"></button>`;
+function wireMinis() { document.querySelectorAll('.mini[data-src]').forEach(b => b.onclick = () => { sel.source = b.dataset.src; sel.start = 0; save(); renderAll(); }); }
+function wireDrop(el) {
+  if (el.dataset.dz) return; el.dataset.dz = 1;
+  el.addEventListener('dragover', e => { e.preventDefault(); $('drop')?.classList.add('over'); });
+  el.addEventListener('dragleave', () => $('drop')?.classList.remove('over'));
+  el.addEventListener('drop', e => { e.preventDefault(); $('drop')?.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) uploadClip(f); });
+}
+async function uploadClip(f) {
+  uploading = true; renderClip(); toast(`Uploading ${f.name}…`);
+  const fd = new FormData(); fd.append('file', f);
+  try { const r = await api('/api/sources', {method:'POST', body:fd}); sel.source = r.id; sel.start = 0; save(); await refresh(); toast('Clip added. Slide Start to your best 8 seconds.'); }
+  catch (e) { toast(e.message, true); }
+  uploading = false; renderClip();
+}
+// Nothing plays in the background: leaving the tab or clicking out of it pauses every video, and only one plays at a time.
+const pauseAll = () => document.querySelectorAll('video,audio').forEach(v => v.pause());
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseAll(); });
+window.addEventListener('blur', pauseAll);
+window.addEventListener('pagehide', pauseAll);
+document.addEventListener('play', e => document.querySelectorAll('video,audio').forEach(v => { if (v !== e.target) v.pause(); }), true);
+document.addEventListener('ended', e => { e.target.loop = false; e.target.pause(); }, true);
+$('newClip').onclick = () => $('fileClip').click();
+$('fileClip').onchange = e => { const f = e.target.files[0]; if (f) uploadClip(f); e.target.value = ''; };
+
+/* ---------- characters ---------- */
+function renderChars() {
+  const c = S.characters.find(c => c.id === sel.character);
+  if (!c && S.characters.length) sel.character = S.characters[0].id;
+  const cur = S.characters.find(c => c.id === sel.character);
+  $('charName').textContent = cur ? cur.name : '';
+  $('chars').innerHTML = S.characters.map(c => `<button class="char ${c.id === sel.character ? 'on' : ''}" data-c="${esc(c.id)}" style="background-image:url('${c.image}')"><span>${esc(c.name)}</span><b class="tick">${icon('check', 13)}</b></button>`).join('')
+    + `<button class="tile" data-f="make">${icon('wand', 20)}Make one<small>~$0.05</small></button>`
+    + `<button class="tile" data-f="upload">${icon('upload', 20)}Upload<small>any face</small></button>`;
+  document.querySelectorAll('.char').forEach(b => b.onclick = () => { sel.character = b.dataset.c; save(); renderChars(); renderDescribe(); renderMake(); });
+  document.querySelectorAll('.tile').forEach(b => b.onclick = () => { charFormOpen = charFormOpen === b.dataset.f ? null : b.dataset.f; renderCharForm(); });
+}
+function renderCharForm() {
+  const f = $('charForm');
+  if (!charFormOpen) { f.innerHTML = ''; return; }
+  const up = charFormOpen === 'upload';
+  f.innerHTML = `<div class="form">
+    <input type="text" id="cfName" placeholder="Name it (e.g. Chrome me)">
+    <textarea id="cfDesc" rows="3" placeholder="${up ? 'What it looks like, for the render prompt' : 'Describe it: body, face, outfit, colors.'}"></textarea>
+    ${up ? '<input type="file" id="cfFile" accept="image/png,image/jpeg,image/webp">' : ''}
+    <div class="row"><button class="primary sm" id="cfGo">${up ? 'Save character' : 'Make it · ~$0.05'}</button><button class="quiet" id="cfX">Cancel</button></div>
+  </div>`;
+  $('cfX').onclick = () => { charFormOpen = null; renderCharForm(); };
+  $('cfGo').onclick = async () => {
+    const name = $('cfName').value.trim(), desc = $('cfDesc').value.trim();
+    if (!name) return toast('Give it a name first.', true);
+    try {
+      if (up) {
+        const file = $('cfFile').files[0]; if (!file) return toast('Pick an image.', true);
+        const fd = new FormData(); fd.append('file', file); fd.append('name', name); fd.append('description', desc);
+        const r = await api('/api/characters', {method:'POST', body:fd}); sel.character = r.id; toast(`${name} saved.`);
+      } else {
+        if (!desc) return toast('Describe the character first.', true);
+        await api('/api/characters/generate', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, description:desc})});
+        sel.character = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40); toast(`Making ${name}…`);
+      }
+      charFormOpen = null; save(); renderCharForm(); refresh();
+    } catch (e) { toast(e.message, true); }
+  };
+}
+function renderDescribe() {
+  const cur = S.characters.find(c => c.id === sel.character), ta = $('describe');
+  if (document.activeElement !== ta) ta.value = sel.descs[sel.character] ?? cur?.description ?? '';
+  $('descToggle').innerHTML = `${icon('wand', 14)}<span>${ta.hidden ? (ta.value ? esc(ta.value) : 'Add a description') : 'Hide description'}</span>`;
+}
+$('descToggle').onclick = () => { $('describe').hidden = !$('describe').hidden; if (!$('describe').hidden) $('describe').focus(); renderDescribe(); };
+$('describe').oninput = e => { sel.descs[sel.character] = e.target.value; save(); };
+
+/* ---------- lip sync ---------- */
+function renderLip() {
+  document.querySelectorAll('#seg button').forEach(b => { const on = b.dataset.v === sel.lipsync; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+  $('lipName').textContent = LIP[sel.lipsync].name;
+  $('lipHint').innerHTML = icon('lips', 16) + `<span>${LIP[sel.lipsync].hint}</span>`;
+  $('fitToggle').setAttribute('aria-checked', sel.match);
+  $('relaxToggle').setAttribute('aria-checked', sel.relaxed);
+  $('fitToggle').hidden = sel.swap === 'head';  // head-only keeps the costume, nothing to match
+  document.querySelectorAll('#swapSeg button').forEach(b => { const on = b.dataset.v === sel.swap; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+}
+document.querySelectorAll('#seg button').forEach(b => b.onclick = () => { sel.lipsync = b.dataset.v; save(); renderLip(); });
+$('fitToggle').onclick = () => { sel.match = !sel.match; save(); renderLip(); };
+$('relaxToggle').onclick = () => { sel.relaxed = !sel.relaxed; save(); renderLip(); renderMake(); };
+document.querySelectorAll('#swapSeg button').forEach(b => b.onclick = () => { sel.swap = b.dataset.v; save(); renderLip(); });
+
+/* ---------- make ---------- */
+const busy = () => S?.task && !S.task.done;
+function renderMake() {
+  const cost = sel.length * (S?.rates.draft_per_s || .168) * (sel.relaxed ? 1.1 : 1), btn = $('make');
+  const ready = source() && sel.character && !busy();
+  btn.disabled = !ready;
+  btn.innerHTML = busy() ? 'Working on one…' : `${icon('sparkle')} Make it · ${money(cost)}`;
+  $('makeNote').textContent = !source() ? 'Add a clip to start' : !sel.character ? 'Pick a character' : busy() ? 'One render at a time. This one first.' : 'Prep runs free on your Mac · one render at a time';
+}
+$('make').onclick = async () => {
+  try {
+    await api('/api/make', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+      source:sel.source, start:sel.start, length:sel.length, character:sel.character, lipsync:sel.lipsync, match_outfit:sel.match, swap:sel.swap, relaxed:sel.relaxed, description:$('describe').value.trim()})});
+    sel.run = null; save(); toast('On it. Prep is free; the render is the only spend.'); refresh();
+  } catch (e) { toast(e.message, true); }
+};
+
+/* ---------- stage ---------- */
+function selectedRun() {
+  const done = S.runs.filter(r => r.final);
+  return S.runs.find(r => r.id === sel.run && r.final) || done[0] || null;
+}
+function renderStage() {
+  const t = S.task, scr = $('screen');
+  if (t && !t.done) { renderProgress(t); $('info').innerHTML = ''; return; }
+  const r = selectedRun();
+  if (!r) {
+    scr.dataset.k = 'empty';
+    scr.innerHTML = `<div class="empty"><h2>YOU, AS <em>ANYONE</em></h2><p>Drop a clip of you rapping, pick a character, press Make. Same scene, same moves, same lips.</p></div>`;
+    $('info').innerHTML = ''; return;
+  }
+  const src = {result:r.final, compare:r.compare, guide:r.guide, original:r.original}[sel.view] || r.final;
+  const key = r.id + '|' + sel.view;
+  if (scr.dataset.k !== key) {
+    scr.dataset.k = key;
+    scr.innerHTML = `<video src="${src}" controls playsinline preload="metadata"></video>
+      <div class="views">${[['result','Result'],['compare','Side by side'],['guide','What Seedance sees'],['original','Original']].map(([k, l]) => `<button data-v="${k}" class="${k === sel.view ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    scr.querySelectorAll('.views button').forEach(b => b.onclick = () => { sel.view = b.dataset.v; save(); renderStage(); });
+  }
+  const ch = S.characters.find(c => c.name === r.character);
+  const lip = r.lip, lipWord = lip == null ? '—' : lip >= .4 ? 'TIGHT' : lip >= .2 ? 'OK' : 'LOOSE';
+  $('info').innerHTML = `<div class="who"><div class="av" style="background-image:url('${ch?.image || r.thumb}')"></div>
+      <div><div class="nm">${esc(r.character)}${r.hd ? ' · 1080p' : ''}</div><div class="sub">${esc(r.clip)} · ${fmtT(r.start || 0)} · ${(r.length || 0).toFixed(1)}s</div></div></div>
+    <div class="meter"><div class="top2">LIP SYNC <b>${lip == null ? '—' : lip.toFixed(2)} · ${lipWord}</b></div><div class="bar"><i style="width:${Math.max(3, Math.min(100, (lip || 0) / .7 * 100))}%"></i></div></div>
+    <span class="chip ${r.lipsync === 'max' ? '' : 'amber'}">${(LIP[r.lipsync]?.name || r.lipsync).toUpperCase()}</span>
+    <span class="cost">${r.cost != null ? money(r.cost) : ''}</span>
+    <div class="acts">${r.hd_ok ? `<button class="secondary ${hdArmed === r.id ? 'warn' : ''}" id="hdBtn">${icon('hd')} ${hdArmed === r.id ? `Tap again · spends ${money(r.hd_cost)}` : `1080p · ~${money(r.hd_cost)}`}</button>` : ''}
+      <button class="quiet" id="revealBtn">${icon('folder')} Show file</button></div>`;
+  $('revealBtn').onclick = () => api('/api/reveal', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({path:r.final})}).catch(e => toast(e.message, true));
+  if ($('hdBtn')) $('hdBtn').onclick = async () => {
+    if (busy()) return toast('One render at a time. Wait for the current one.', true);
+    if (hdArmed !== r.id) { hdArmed = r.id; renderStage(); clearTimeout(renderStage.t); renderStage.t = setTimeout(() => { hdArmed = null; renderStage(); }, 4000); return; }
+    hdArmed = null;
+    try { await api('/api/hd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({job:r.job, run:r.run})}); toast('Upscaling to 1080p.'); refresh(); }
+    catch (e) { toast(e.message, true); }
+  };
+}
+function renderProgress(t) {
+  const scr = $('screen');
+  if (scr.dataset.k !== 'prog') { scr.dataset.k = 'prog'; scr.innerHTML = `<div class="progress"><div class="loader">LYRC</div><ul class="steps" id="steps"></ul><div class="elapsed" id="elapsed"></div></div>`; }
+  $('steps').innerHTML = (t.steps || []).map((s, i) => `<li class="${i < t.step ? 'done' : i === t.step ? 'now' : ''}"><i>${i < t.step ? icon('check', 12) : ''}</i>${esc(s)}${i === t.step && t.progress != null ? `<span class="pct">${t.progress}%</span>` : ''}</li>`).join('');
+  const sec = Math.round(Date.now() / 1000 - t.started);
+  $('elapsed').textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')} elapsed · ${t.step < 6 && t.kind === 'make' ? 'prep takes ~5–10 min, free' : 'Evolink takes ~5 min'}`;
+}
+
+/* ---------- swaps ---------- */
+function renderCards() {
+  const t = S.task, cur = selectedRun();
+  const live = t && !t.done ? `<div class="card on"><div class="th"><div class="loader">LYRC</div></div><div class="meta"><b>${esc(t.stage)}</b><span>${t.progress != null ? t.progress + '%' : 'working…'}</span></div></div>` : '';
+  const items = S.runs.filter(r => !(t && !t.done && r.id === t.run));
+  $('swapCount').textContent = S.runs.length ? `${S.runs.filter(r => r.final).length} made` : '';
+  $('cards').innerHTML = live + items.map(r => {
+    const fail = r.status === 'failed';
+    return `<button class="card ${cur && r.id === cur.id && !live ? 'on' : ''} ${fail ? 'fail' : ''}" data-r="${esc(r.id)}" ${r.final ? '' : 'disabled'}>
+      <div class="th" style="${r.thumb ? `background-image:url('${r.thumb}')` : ''}">${r.final ? '' : `<span class="sub">${fail ? 'Failed · not charged' : esc(r.status)}</span>`}
+        ${r.lip != null ? `<span class="badge">👄 ${r.lip.toFixed(2)}</span>` : fail ? '<span class="badge">failed</span>' : ''}</div>
+      <div class="meta"><b>${esc(r.character)}${r.hd ? ' · 1080p' : ''}</b><span>${(LIP[r.lipsync]?.name || '')}${r.outfit ? ' · ' + esc(r.outfit) : ''} · ${r.cost != null ? money(r.cost) : esc(r.clip)}</span></div></button>`;
+  }).join('');
+  document.querySelectorAll('.card[data-r]').forEach(b => b.onclick = () => { sel.run = b.dataset.r; save(); renderStage(); renderCards(); });
+}
+
+function renderAll() {
+  $('spend').textContent = money(S.spend_today);
+  renderClip(); renderChars(); renderLip(); renderDescribe(); renderMake(); renderStage(); renderCards();
+}
+let keyAsked = false;
+function showKey(force) {
+  $('keyModal').hidden = false; $('keyCancel').hidden = !S?.has_key; $('keyInput').value = ''; setTimeout(() => $('keyInput').focus(), 50);
+}
+$('keyIc').innerHTML = icon('key', 15); $('keyIcon').innerHTML = icon('key', 28);
+$('keyBtn').onclick = () => showKey(true);
+$('keyCancel').onclick = () => { $('keyModal').hidden = true; };
+$('keySave').onclick = async () => {
+  const key = $('keyInput').value.trim(); if (!key) return toast('Paste the key first.', true);
+  $('keySave').disabled = true; $('keySave').textContent = 'Checking…';
+  try { await api('/api/key', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key})}); $('keyModal').hidden = true; toast('Key saved. You\'re set.'); refresh(); }
+  catch (e) { toast(e.message, true); }
+  $('keySave').disabled = false; $('keySave').textContent = 'Save key';
+};
+$('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('keySave').click(); });
+let pageVersion = null;
+async function refresh() {
+  try { S = await api('/api/state'); }
+  catch (e) { toast('Studio is off. Double-click "Open Genjutsu Studio" in ~/projects/genjutsu-evolink.', true); return; }
+  // An open tab keeps old code forever; pick up studio fixes on its own, but never in the middle of a playing video.
+  if (pageVersion && S.page_version !== pageVersion && ![...document.querySelectorAll('video')].some(v => !v.paused)) return location.reload();
+  pageVersion = pageVersion || S.page_version;
+  if (!S.has_key && !keyAsked) { keyAsked = true; showKey(); }
+  if (!sel.source && S.sources.length) sel.source = S.sources[0].id;
+  const t = S.task;
+  if (t && t.done && lastTaskDone !== t.id) {
+    lastTaskDone = t.id;
+    if (t.error) toast(t.error, true);
+    else { if (t.run) sel.run = t.run; toast(t.kind === 'character' ? 'Character ready.' : 'Done. Your swap is up.'); }
+    save(); api('/api/task/clear', {method:'POST'});
+  }
+  renderAll();
+}
+(async function loop() { await refresh(); setTimeout(loop, busy() ? 2000 : 8000); })();
+</script>
+</body>
+</html>

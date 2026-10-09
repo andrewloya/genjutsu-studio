@@ -1,0 +1,14 @@
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+transformers==4.49.0
+demucs==4.1.0
+mediapipe==1.1.0
+opencv-python-headless==5.0.0.93
+numpy==2.5.3
+pillow==12.3.0
+scipy==1.18.1
+soundfile==0.14.0
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32

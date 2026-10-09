@@ -1,0 +1,12 @@
+.venv/
+.env
+jobs/
+sources/
+models/
+out/
+studio.log
+__pycache__/
+*.pyc
+.DS_Store
+characters/*
+!characters/blue-glass/
