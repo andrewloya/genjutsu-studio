@@ -68,8 +68,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .trow output{font:600 13px var(--num);color:#fff;text-align:right}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--blue) var(--p,50%),var(--b2) var(--p,50%));outline-offset:6px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--blue);box-shadow:0 0 12px rgba(60,197,247,.5)}
-.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
-.mini{flex:none;width:64px;height:36px;border-radius:8px;overflow:hidden;border:1px solid var(--b2);background:#000 center/cover;position:relative}
+#clipBody{display:grid;gap:10px}
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:min(calc((100% - 34px) / 5),120px);gap:8px;overflow-x:auto;padding:1px 1px 3px;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.mini{width:auto;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:1px solid var(--b2);background:#000 center/cover;position:relative}
 .mini.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
 .mini.add{display:grid;place-items:center;border-style:dashed;border-color:rgba(60,197,247,.4);color:var(--pale);background:transparent}
 
